@@ -85,7 +85,12 @@ public class ExpressionBoolenne {
         public boolean evaluer(boolean[] e, Noeud courrant) {
 
             if (courrant.isFeuille()) {
-                return e[]
+                return bools.get(courrant);
+            }
+            else{
+                if(courrant.getContenu()="¬"){
+                    
+                }
             }
         }
 
