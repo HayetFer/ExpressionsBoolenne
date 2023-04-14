@@ -1,9 +1,8 @@
 import java.util.HashMap;
 
 public class ExpressionBoolenne {
-    final int k=5;
+    static final int k=5;
     private Noeud racine;
-    private HashMap<Noeud, Boolean> bools;
     public ExpressionBoolenne(){
         racine=null;
     }
@@ -18,7 +17,9 @@ public class ExpressionBoolenne {
     public boolean estVide(){
         return racine==null;
     }
-
+    public boolean estFeuille(){
+        return (racine.GetDroite()==null && racine.GetGauche()==null);
+    }
     public ExpressionBoolenne disjonction(ExpressionBoolenne e){
         try{
             Noeud nouvelleRacine = new Noeud("∧");
@@ -45,13 +46,12 @@ public class ExpressionBoolenne {
         }
         return null;
     }
-    public ExpressionBoolenne negation(ExpressionBoolenne e){
+    public ExpressionBoolenne negation(){
         try {
-            Noeud nouvelleRacine = new Noeud("¬");
-            nouvelleRacine.setDroite(racine);
-            nouvelleRacine.setGauche(e.racine);
-            racine = nouvelleRacine;
-            return this;
+            Noeud nouv= new Noeud("¬");
+            nouv.setDroite(racine);
+            racine=nouv;
+
         }
         catch(NullPointerException exception){
             System.out.println("Erreur Expression nulle");
@@ -83,28 +83,66 @@ public class ExpressionBoolenne {
             return evaluer(e, racine);
         }
         public boolean evaluer(boolean[] e, Noeud courrant) {
-
             if (courrant.isFeuille()) {
-                return bools.get(courrant);
+                return e[(char) courrant.getContenu()];
             }
             else{
-                if(courrant.getContenu()="¬"){
-                    
+                if(courrant.getContenu()=="¬"){
+                    if(courrant.GetGauche()==null){
+                        return !evaluer(e,courrant.GetDroite());
+                    }
+                    else if(courrant.GetDroite()==null){
+                        return !evaluer(e,courrant.GetGauche());
+                    }
+                }
+                else if(courrant.getContenu()=="∨"){
+                    return (evaluer(e,courrant.GetGauche())||evaluer(e,courrant.GetDroite()));
+                }
+                else {
+                    return (evaluer(e,courrant.GetGauche())&&evaluer(e,courrant.GetDroite()));
                 }
             }
+            return false;
         }
 
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws Exception {
         ExpressionBoolenne a = new ExpressionBoolenne('a');
         ExpressionBoolenne b = new ExpressionBoolenne('b');
-        ExpressionBoolenne c = new ExpressionBoolenne('d');
-        ExpressionBoolenne d = new ExpressionBoolenne('e');
+        ExpressionBoolenne c = new ExpressionBoolenne('c');
+        ExpressionBoolenne d = new ExpressionBoolenne('d');
+        boolean [] test = new boolean[122];
+        for(int i = 97;i<97+k-1;i++){
+            test[i]=false;
+        }
+        test['d']=true;
+        //test['a']=true;
+        test['b']=true;
         d.conjonction(c);
+        System.out.println(d.evaluer(test));
         System.out.println(d.affichage());
-        d.negation(c);
+        d.negation();
+        System.out.println(d.evaluer(test));
+        System.out.println(d.affichage());
+        d.disjonction(a);
+        System.out.println(d.evaluer(test));
         System.out.println(d.affichage());
         d.conjonction(b);
+        System.out.println(d.evaluer(test));
         System.out.println(d.affichage());
+        c.conjonction(d);
+        System.out.println(c.evaluer(test));
+        System.out.println(c.affichage());
+        c.negation();
+        System.out.println(c.evaluer(test));
+        System.out.println(c.affichage());
+        c.disjonction(b);
+        System.out.println(c.evaluer(test));
+        System.out.println(c.affichage());
+        c.conjonction(a);
+        System.out.println(c.evaluer(test));
+        System.out.println(c.affichage());
+
     }
 
 }
